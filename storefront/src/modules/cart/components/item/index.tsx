@@ -50,7 +50,7 @@ const Item = ({ item, type = "full" }: ItemProps) => {
     <Table.Row className="w-full" data-testid="product-row">
       <Table.Cell className="!pl-0 p-4 w-24">
         <LocalizedClientLink
-          href={`/products/${handle}`}
+          href={`/produse/${handle}`}
           className={clx("flex", {
             "w-16": type === "preview",
             "small:w-24 w-12": type === "full",
@@ -66,12 +66,12 @@ const Item = ({ item, type = "full" }: ItemProps) => {
 
       <Table.Cell className="text-left">
         <Text
-          className="txt-medium-plus text-ui-fg-base"
+          className="txt-medium-plus text-ui-fg-base uppercase font-bold"
           data-testid="product-title"
         >
           {item.product_title}
         </Text>
-        <LineItemOptions variant={item.variant} data-testid="product-variant" />
+        {/*<LineItemOptions variant={item.variant} data-testid="product-variant" />*/}
       </Table.Cell>
 
       {type === "full" && (

@@ -4,10 +4,14 @@ import React, { useEffect } from "react"
 import { useFormState } from "react-dom"
 
 import Input from "@modules/common/components/input"
-
 import AccountInfo from "../account-info"
 import { HttpTypes } from "@medusajs/types"
-// import { updateCustomer } from "@lib/data/customer"
+
+// Tip personalizat pentru `state`
+type FormState = {
+  success: boolean
+  error: string | null
+}
 
 type MyInformationProps = {
   customer: HttpTypes.StoreCustomer
@@ -16,26 +20,26 @@ type MyInformationProps = {
 const ProfileEmail: React.FC<MyInformationProps> = ({ customer }) => {
   const [successState, setSuccessState] = React.useState(false)
 
-  // TODO: It seems we don't support updating emails now?
-  const updateCustomerEmail = (
-    _currentState: Record<string, unknown>,
-    formData: FormData
-  ) => {
-    const customer = {
+  const updateCustomerEmail = async (currentState: FormState): Promise<FormState> => {
+    const formData = new FormData(document.querySelector('form') as HTMLFormElement);
+    const updatedCustomer = {
       email: formData.get("email") as string,
     }
 
     try {
-      // await updateCustomer(customer)
+      // Simulăm actualizarea clientului (de exemplu, printr-o cerere API)
+      // await updateCustomer(updatedCustomer)
+
       return { success: true, error: null }
     } catch (error: any) {
       return { success: false, error: error.toString() }
     }
   }
 
-  const [state, formAction] = useFormState(updateCustomerEmail, {
-    error: false,
+  // Tipizăm corect `useFormState` cu tipul `FormState`
+  const [state, formAction] = useFormState<FormState>(updateCustomerEmail, {
     success: false,
+    error: null,
   })
 
   const clearState = () => {
@@ -43,7 +47,7 @@ const ProfileEmail: React.FC<MyInformationProps> = ({ customer }) => {
   }
 
   useEffect(() => {
-    setSuccessState(state.success)
+    setSuccessState(!!state.success) // Ne asigurăm că valoarea este booleană
   }, [state])
 
   return (
@@ -53,7 +57,7 @@ const ProfileEmail: React.FC<MyInformationProps> = ({ customer }) => {
         currentInfo={`${customer.email}`}
         isSuccess={successState}
         isError={!!state.error}
-        errorMessage={state.error}
+        errorMessage={state.error ?? ""}
         clearState={clearState}
         data-testid="account-email-editor"
       >

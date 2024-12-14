@@ -8,24 +8,24 @@ import { redirect } from "next/navigation"
 import { cache } from "react"
 import { getAuthHeaders, removeAuthToken, setAuthToken } from "./cookies"
 
-export const getCustomer = cache(async function () {
-  return await sdk.store.customer
-    .retrieve({}, { next: { tags: ["customer"] }, ...getAuthHeaders() })
-    .then(({ customer }) => customer)
-    .catch(() => null)
-})
+export async function getCustomer() {
+  try {
+    const { customer } = await sdk.store.customer.retrieve({}, { next: { tags: ["customer"] }, ...getAuthHeaders() });
+    return customer;
+  } catch (error) {
+    return null;
+  }
+}
 
-export const updateCustomer = cache(async function (
-  body: HttpTypes.StoreUpdateCustomer
-) {
-  const updateRes = await sdk.store.customer
-    .update(body, {}, getAuthHeaders())
-    .then(({ customer }) => customer)
-    .catch(medusaError)
-
-  revalidateTag("customer")
-  return updateRes
-})
+export async function updateCustomer(body: any) {
+  try {
+    const updateRes = await sdk.store.customer.update(body, {}, getAuthHeaders());
+    revalidateTag("customer");
+    return updateRes;
+  } catch (error) {
+    medusaError(error);
+  }
+}
 
 export async function signup(_currentState: unknown, formData: FormData) {
   const password = formData.get("password") as string
@@ -55,7 +55,12 @@ export async function signup(_currentState: unknown, formData: FormData) {
       password,
     })
 
-    setAuthToken(typeof loginToken === 'string' ? loginToken : loginToken.location)
+    if (typeof loginToken === "string") {
+      setAuthToken(loginToken);
+    } else if (loginToken?.location) {
+      setAuthToken(loginToken.location); // Sau folosește proprietatea corectă din obiect
+    }
+    
 
     revalidateTag("customer")
     return createdCustomer
@@ -72,9 +77,14 @@ export async function login(_currentState: unknown, formData: FormData) {
     await sdk.auth
       .login("customer", "emailpass", { email, password })
       .then((token) => {
-        setAuthToken(typeof token === 'string' ? token : token.location)
-        revalidateTag("customer")
+        if (typeof token === "string") {
+          setAuthToken(token);
+        } else if (token?.location) {
+          setAuthToken(token.location); // Utilizează proprietatea `location` dacă este un obiect
+        }
+        revalidateTag("customer");
       })
+      
   } catch (error: any) {
     return error.toString()
   }
@@ -85,7 +95,7 @@ export async function signout(countryCode: string) {
   removeAuthToken()
   revalidateTag("auth")
   revalidateTag("customer")
-  redirect(`/${countryCode}/account`)
+  redirect(`/${countryCode}/cont`)
 }
 
 export const addCustomerAddress = async (

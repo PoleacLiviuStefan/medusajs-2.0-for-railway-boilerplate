@@ -27,34 +27,34 @@ const AccountNav = ({
   return (
     <div>
       <div className="small:hidden" data-testid="mobile-account-nav">
-        {route !== `/${countryCode}/account` ? (
+        {route !== `/${countryCode}/cont` ? (
           <LocalizedClientLink
-            href="/account"
+            href="/cont"
             className="flex items-center gap-x-2 text-small-regular py-2"
             data-testid="account-main-link"
           >
             <>
               <ChevronDown className="transform rotate-90" />
-              <span>Account</span>
+              <span>Cont</span>
             </>
           </LocalizedClientLink>
         ) : (
           <>
             <div className="text-xl-semi mb-4 px-8">
-              Hello {customer?.first_name}
+              Buna {customer?.first_name}
             </div>
             <div className="text-base-regular">
               <ul>
                 <li>
                   <LocalizedClientLink
-                    href="/account/profile"
+                    href="/cont/profil"
                     className="flex items-center justify-between py-4 border-b border-gray-200 px-8"
                     data-testid="profile-link"
                   >
                     <>
                       <div className="flex items-center gap-x-2">
                         <User size={20} />
-                        <span>Profile</span>
+                        <span>Profil</span>
                       </div>
                       <ChevronDown className="transform -rotate-90" />
                     </>
@@ -62,14 +62,14 @@ const AccountNav = ({
                 </li>
                 <li>
                   <LocalizedClientLink
-                    href="/account/addresses"
+                    href="/cont/adrese"
                     className="flex items-center justify-between py-4 border-b border-gray-200 px-8"
                     data-testid="addresses-link"
                   >
                     <>
                       <div className="flex items-center gap-x-2">
                         <MapPin size={20} />
-                        <span>Addresses</span>
+                        <span>Adrese</span>
                       </div>
                       <ChevronDown className="transform -rotate-90" />
                     </>
@@ -77,13 +77,13 @@ const AccountNav = ({
                 </li>
                 <li>
                   <LocalizedClientLink
-                    href="/account/orders"
+                    href="/cont/comenzi"
                     className="flex items-center justify-between py-4 border-b border-gray-200 px-8"
                     data-testid="orders-link"
                   >
                     <div className="flex items-center gap-x-2">
                       <Package size={20} />
-                      <span>Orders</span>
+                      <span>Comenzi</span>
                     </div>
                     <ChevronDown className="transform -rotate-90" />
                   </LocalizedClientLink>
@@ -116,38 +116,38 @@ const AccountNav = ({
             <ul className="flex mb-0 justify-start items-start flex-col gap-y-4">
               <li>
                 <AccountNavLink
-                  href="/account"
+                  href="/cont"
                   route={route!}
                   data-testid="overview-link"
                 >
-                  Overview
+                  General
                 </AccountNavLink>
               </li>
               <li>
                 <AccountNavLink
-                  href="/account/profile"
+                  href="/cont/profil"
                   route={route!}
                   data-testid="profile-link"
                 >
-                  Profile
+                  Profil
                 </AccountNavLink>
               </li>
               <li>
                 <AccountNavLink
-                  href="/account/addresses"
+                  href="/cont/adrese"
                   route={route!}
                   data-testid="addresses-link"
                 >
-                  Addresses
+                  Adrese
                 </AccountNavLink>
               </li>
               <li>
                 <AccountNavLink
-                  href="/account/orders"
+                  href="/cont/comenzi"
                   route={route!}
                   data-testid="orders-link"
                 >
-                  Orders
+                  Comenzi
                 </AccountNavLink>
               </li>
               <li className="text-grey-700">

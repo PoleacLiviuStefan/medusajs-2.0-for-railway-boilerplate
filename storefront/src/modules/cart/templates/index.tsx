@@ -12,6 +12,8 @@ const CartTemplate = ({
   cart: HttpTypes.StoreCart | null
   customer: HttpTypes.StoreCustomer | null
 }) => {
+
+  console.log("cart este asa: ",cart);
   return (
     <div className="py-12">
       <div className="content-container" data-testid="cart-container">

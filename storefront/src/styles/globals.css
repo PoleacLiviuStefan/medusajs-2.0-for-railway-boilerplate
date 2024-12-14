@@ -2,6 +2,15 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
+
+@layer base {
+  html,
+  body {
+    @apply min-w-[100vw] min-h-[100vh] overflow-x-hidden;
+  }
+}
+
+
 @layer utilities {
   /* Chrome, Safari and Opera */
   .no-scrollbar::-webkit-scrollbar {
@@ -51,7 +60,7 @@
 
 @layer components {
   .content-container {
-    @apply max-w-[1440px] w-full mx-auto px-6;
+    @apply max-w-[1140px] w-full mx-auto px-6;
   }
 
   .contrast-btn {

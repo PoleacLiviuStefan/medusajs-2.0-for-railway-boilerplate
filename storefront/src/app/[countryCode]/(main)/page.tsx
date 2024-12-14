@@ -4,11 +4,13 @@ import FeaturedProducts from "@modules/home/components/featured-products"
 import Hero from "@modules/home/components/hero"
 import { getCollectionsWithProducts } from "@lib/data/collections"
 import { getRegion } from "@lib/data/regions"
+import TopSellingProducts from "@modules/store/templates/top-selling-products"
+
 
 export const metadata: Metadata = {
-  title: "Medusa Next.js Starter Template",
+  title: "Lorena Lash",
   description:
-    "A performant frontend ecommerce starter template with Next.js 14 and Medusa.",
+    "Magazin Online",
 }
 
 export default async function Home({
@@ -16,7 +18,9 @@ export default async function Home({
 }: {
   params: { countryCode: string }
 }) {
+
   const collections = await getCollectionsWithProducts(countryCode)
+  console.log("collections",collections)
   const region = await getRegion(countryCode)
 
   if (!collections || !region) {
@@ -25,10 +29,10 @@ export default async function Home({
 
   return (
     <>
-      <Hero />
-      <div className="py-12">
-        <ul className="flex flex-col gap-x-6">
+      <div className="flex justify-center w-full lpy-12">
+        <ul className="flex flex-col gap-x-6 lg:w-[900px]">
           <FeaturedProducts collections={collections} region={region} />
+     
         </ul>
       </div>
     </>

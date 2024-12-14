@@ -47,62 +47,62 @@ const AddAddress = ({ region }: { region: HttpTypes.StoreRegion }) => {
         onClick={open}
         data-testid="add-address-button"
       >
-        <span className="text-base-semi">New address</span>
+        <span className="text-base-semi">Adresa Noua</span>
         <Plus />
       </button>
 
       <Modal isOpen={state} close={close} data-testid="add-address-modal">
         <Modal.Title>
-          <Heading className="mb-2">Add address</Heading>
+          <Heading className="mb-2">Adauga Adresa</Heading>
         </Modal.Title>
         <form action={formAction}>
           <Modal.Body>
             <div className="flex flex-col gap-y-2">
               <div className="grid grid-cols-2 gap-x-2">
                 <Input
-                  label="First name"
-                  name="first_name"
-                  required
-                  autoComplete="given-name"
-                  data-testid="first-name-input"
-                />
-                <Input
-                  label="Last name"
+                  label="Nume"
                   name="last_name"
                   required
                   autoComplete="family-name"
                   data-testid="last-name-input"
                 />
+                <Input
+                  label="Prenume"
+                  name="first_name"
+                  required
+                  autoComplete="given-name"
+                  data-testid="first-name-input"
+                />
               </div>
               <Input
-                label="Company"
+                label="Firma"
                 name="company"
                 autoComplete="organization"
                 data-testid="company-input"
               />
               <Input
-                label="Address"
+                label="Adresa"
                 name="address_1"
                 required
                 autoComplete="address-line1"
                 data-testid="address-1-input"
               />
               <Input
-                label="Apartment, suite, etc."
+                label="Strada, etaj, etc."
                 name="address_2"
                 autoComplete="address-line2"
                 data-testid="address-2-input"
               />
               <div className="grid grid-cols-[144px_1fr] gap-x-2">
                 <Input
-                  label="Postal code"
+                  label="Cod postal"
                   name="postal_code"
                   required
                   autoComplete="postal-code"
                   data-testid="postal-code-input"
                 />
                 <Input
-                  label="City"
+                  label="Oras"
                   name="city"
                   required
                   autoComplete="locality"
@@ -110,7 +110,7 @@ const AddAddress = ({ region }: { region: HttpTypes.StoreRegion }) => {
                 />
               </div>
               <Input
-                label="Province / State"
+                label="Judet / Sector"
                 name="province"
                 autoComplete="address-level1"
                 data-testid="state-input"
@@ -123,8 +123,9 @@ const AddAddress = ({ region }: { region: HttpTypes.StoreRegion }) => {
                 data-testid="country-select"
               />
               <Input
-                label="Phone"
+                label="Telefon"
                 name="phone"
+                required
                 autoComplete="phone"
                 data-testid="phone-input"
               />
@@ -147,9 +148,9 @@ const AddAddress = ({ region }: { region: HttpTypes.StoreRegion }) => {
                 className="h-10"
                 data-testid="cancel-button"
               >
-                Cancel
+                Anulare
               </Button>
-              <SubmitButton data-testid="save-button">Save</SubmitButton>
+              <SubmitButton data-testid="save-button">Salveazqa</SubmitButton>
             </div>
           </Modal.Footer>
         </form>

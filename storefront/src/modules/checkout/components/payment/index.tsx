@@ -84,11 +84,14 @@ const Payment = ({
 
   const handleSubmit = async () => {
     setIsLoading(true)
+    console.log("selectedPaymentMethod in submit: ",selectedPaymentMethod)
+    console.log("selectedPaymentMethod in submit verificare: ",isStripeFunc(selectedPaymentMethod))
+    console.log("active session ",isStripeFunc(selectedPaymentMethod))
     try {
       const shouldInputCard =
         isStripeFunc(selectedPaymentMethod) && !activeSession
 
-      if (!activeSession) {
+      if (!activeSession || selectedPaymentMethod==="pp_system_default") {
         await initiatePaymentSession(cart, {
           provider_id: selectedPaymentMethod,
         })
@@ -126,7 +129,7 @@ const Payment = ({
             }
           )}
         >
-          Payment
+          Plata
           {!isOpen && paymentReady && <CheckCircleSolid />}
         </Heading>
         {!isOpen && paymentReady && (
@@ -147,13 +150,17 @@ const Payment = ({
             <>
               <RadioGroup
                 value={selectedPaymentMethod}
-                onChange={(value: string) => setSelectedPaymentMethod(value)}
+                onChange={(value: string) => {setSelectedPaymentMethod(value); console.log("metoda selectata ",value)}}
               >
                 {availablePaymentMethods
                   .sort((a, b) => {
                     return a.provider_id > b.provider_id ? 1 : -1
                   })
                   .map((paymentMethod) => {
+                    if (
+                      (cart.total < 150 && paymentMethod.id === "pp_system_default") || 
+                      paymentMethod.id !== "pp_system_default"
+                    ) {
                     return (
                       <PaymentContainer
                         paymentInfoMap={paymentInfoMap}
@@ -162,12 +169,12 @@ const Payment = ({
                         selectedPaymentOptionId={selectedPaymentMethod}
                       />
                     )
-                  })}
+                  }})}
               </RadioGroup>
-              {isStripe && stripeReady && (
+              {selectedPaymentMethod!=="pp_system_default" && isStripe && stripeReady && (
                 <div className="mt-5 transition-all duration-150 ease-in-out">
                   <Text className="txt-medium-plus text-ui-fg-base mb-1">
-                    Enter your card details:
+                    Introdu datele cardului:
                   </Text>
 
                   <CardElement
@@ -189,13 +196,13 @@ const Payment = ({
           {paidByGiftcard && (
             <div className="flex flex-col w-1/3">
               <Text className="txt-medium-plus text-ui-fg-base mb-1">
-                Payment method
+                Metoda de Plata
               </Text>
               <Text
                 className="txt-medium text-ui-fg-subtle"
                 data-testid="payment-method-summary"
               >
-                Gift card
+                Card Cadou
               </Text>
             </div>
           )}
@@ -211,14 +218,15 @@ const Payment = ({
             onClick={handleSubmit}
             isLoading={isLoading}
             disabled={
-              (isStripe && !cardComplete) ||
-              (!selectedPaymentMethod && !paidByGiftcard)
+              selectedPaymentMethod!=="pp_system_default" &&
+              ((isStripe && !cardComplete) ||
+              (!selectedPaymentMethod && !paidByGiftcard))
             }
             data-testid="submit-payment-button"
           >
             {!activeSession && isStripeFunc(selectedPaymentMethod)
-              ? " Enter card details"
-              : "Continue to review"}
+              ? " Introdu Datele Cardului"
+              : "Continua catre Revizuire"}
           </Button>
         </div>
 
@@ -227,7 +235,7 @@ const Payment = ({
             <div className="flex items-start gap-x-1 w-full">
               <div className="flex flex-col w-1/3">
                 <Text className="txt-medium-plus text-ui-fg-base mb-1">
-                  Payment method
+                  Metoda de Plata
                 </Text>
                 <Text
                   className="txt-medium text-ui-fg-subtle"
@@ -239,7 +247,7 @@ const Payment = ({
               </div>
               <div className="flex flex-col w-1/3">
                 <Text className="txt-medium-plus text-ui-fg-base mb-1">
-                  Payment details
+                  Detaliile Platii
                 </Text>
                 <div
                   className="flex gap-2 txt-medium text-ui-fg-subtle items-center"
@@ -253,7 +261,7 @@ const Payment = ({
                   <Text>
                     {isStripeFunc(selectedPaymentMethod) && cardBrand
                       ? cardBrand
-                      : "Another step will appear"}
+                      : "O sa mai urmeze un pas de plata"}
                   </Text>
                 </div>
               </div>
@@ -261,13 +269,13 @@ const Payment = ({
           ) : paidByGiftcard ? (
             <div className="flex flex-col w-1/3">
               <Text className="txt-medium-plus text-ui-fg-base mb-1">
-                Payment method
+                Metoda de Plata
               </Text>
               <Text
                 className="txt-medium text-ui-fg-subtle"
                 data-testid="payment-method-summary"
               >
-                Gift card
+                Card cadou
               </Text>
             </div>
           ) : null}

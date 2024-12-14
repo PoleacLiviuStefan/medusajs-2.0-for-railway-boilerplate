@@ -28,7 +28,7 @@ export const paymentInfoMap: Record<
   },
   pp_system_default: {
     title: "Manual Payment",
-    icon: <CreditCard />,
+    icon: <Ideal />,
   },
   // Add more payment providers here
 }
@@ -65,4 +65,30 @@ export const noDivisionCurrencies = [
   "xag",
   "xdr",
   "xau",
+]
+
+export const FAQ=[
+  {
+    question:"Cât timp durează livrarea produselor?",
+    answer:"Livrarea produselor durează între 1-3 zile lucrătoare, în funcție de locația dvs. Pentru comenzi plasate în timpul sărbătorilor sau perioadelor aglomerate, durata livrării poate crește ușor"
+  },
+{
+    question:"Care sunt metodele de plată acceptate?",
+    answer:"Acceptăm plăți prin card bancar (Visa, Mastercard, Maestro), PayPal, și plata ramburs la livrare. Toate tranzacțiile sunt securizate și procesate de Stripe."
+
+  },
+  {
+    question:"Pot returna produsele dacă nu sunt mulțumit(ă)?",
+    answer:"Da, puteți returna produsele în termen de 14 zile calendaristice de la primirea comenzii. Produsele trebuie să fie sigilate, neutilizate și în ambalajul original. Pentru a iniția un retur, vă rugăm să ne contactați prin e-mail sau telefon pentru a primi instrucțiuni suplimentare."
+
+  },  
+  {
+    question:"Cum pot verifica statusul comenzii mele?",
+    answer:'Pentru a verifica statusul comenzii, accesați secțiunea "Contul meu" din site și selectați "Istoricul comenzilor".'
+  },
+  {
+    question:"Ce fac dacă primesc un produs defect sau greșit?",
+    answer:"Ne cerem scuze pentru eventualele inconveniente. Dacă primiți un produs defect sau greșit, vă rugăm să ne contactați în termen de 48 de ore de la primirea coletului. Vom înlocui produsul sau vă vom oferi un ramburs, conform preferințelor dvs."
+
+  },
 ]

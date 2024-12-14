@@ -52,7 +52,7 @@ const MobileActions: React.FC<MobileActionsProps> = ({
   return (
     <>
       <div
-        className={clx("lg:hidden inset-x-0 bottom-0 fixed", {
+        className={clx("lg:hidden inset-x-0 bottom-0 fixed z-50", {
           "pointer-events-none": !show,
         })}
       >
@@ -67,7 +67,7 @@ const MobileActions: React.FC<MobileActionsProps> = ({
           leaveTo="opacity-0"
         >
           <div
-            className="bg-white flex flex-col gap-y-3 justify-center items-center text-large-regular p-4 h-full w-full border-t border-gray-200"
+            className="bg-white flex flex-col gap-y-3 justify-center items-center text-large-regular z-50 p-4 h-full w-full border-t border-gray-200 z-50"
             data-testid="mobile-actions"
           >
             <div className="flex items-center gap-x-2">
@@ -95,13 +95,14 @@ const MobileActions: React.FC<MobileActionsProps> = ({
                 <div></div>
               )}
             </div>
-            <div className="grid grid-cols-2 w-full gap-x-4">
-              <Button
+            <div className="grid  w-full gap-x-4 z-50">
+              {/* <Button
                 onClick={open}
                 variant="secondary"
                 className="w-full"
                 data-testid="mobile-actions-button"
               >
+                
                 <div className="flex items-center justify-between w-full">
                   <span>
                     {variant
@@ -110,7 +111,8 @@ const MobileActions: React.FC<MobileActionsProps> = ({
                   </span>
                   <ChevronDown />
                 </div>
-              </Button>
+                
+              </Button> */}
               <Button
                 onClick={handleAddToCart}
                 disabled={!inStock || !variant}
@@ -118,11 +120,11 @@ const MobileActions: React.FC<MobileActionsProps> = ({
                 isLoading={isAdding}
                 data-testid="mobile-cart-button"
               >
-                {!variant
+                { /*!variant
                   ? "Select variant"
-                  : !inStock
-                  ? "Out of stock"
-                  : "Add to cart"}
+                  :*/ !inStock
+                  ? "Nu mai este in stoc"
+                  : "Adauga in cos"}
               </Button>
             </div>
           </div>

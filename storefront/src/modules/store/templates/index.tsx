@@ -3,8 +3,10 @@ import { Suspense } from "react"
 import SkeletonProductGrid from "@modules/skeletons/templates/skeleton-product-grid"
 import RefinementList from "@modules/store/components/refinement-list"
 import { SortOptions } from "@modules/store/components/refinement-list/sort-products"
-
+import LorenaBanner from '../../../../public/Imagini/stiliste/lorena-shop-banner.png'
 import PaginatedProducts from "./paginated-products"
+import TopSellingProducts from "./top-selling-products"
+import Hero from "@modules/home/components/hero"
 
 const StoreTemplate = ({
   sortBy,
@@ -19,15 +21,17 @@ const StoreTemplate = ({
   const sort = sortBy || "created_at"
 
   return (
+    <>
+         <Hero image={LorenaBanner} imageWidth="350" imageWidthMobile="300" backCircle={true} /> 
     <div
       className="flex flex-col small:flex-row small:items-start py-6 content-container"
       data-testid="category-container"
     >
+        
       <RefinementList sortBy={sort} />
-      <div className="w-full">
-        <div className="mb-8 text-2xl-semi">
-          <h1 data-testid="store-page-title">All products</h1>
-        </div>
+      <div className="flex flex-col items-center justify-center w-full min-h-[150px]">
+ 
+
         <Suspense fallback={<SkeletonProductGrid />}>
           <PaginatedProducts
             sortBy={sort}
@@ -37,6 +41,7 @@ const StoreTemplate = ({
         </Suspense>
       </div>
     </div>
+    </>
   )
 }
 

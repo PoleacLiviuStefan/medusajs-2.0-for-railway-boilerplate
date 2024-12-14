@@ -63,7 +63,7 @@ const AccountInfo = ({
             data-testid="edit-button"
             data-active={state}
           >
-            {state ? "Cancel" : "Edit"}
+            {state ? "Anuleaza" : "Edit"}
           </Button>
         </div>
       </div>
@@ -82,7 +82,7 @@ const AccountInfo = ({
           data-testid="success-message"
         >
           <Badge className="p-2 my-4" color="green">
-            <span>{label} updated succesfully</span>
+            <span>{label} s-a actualizat cu succes</span>
           </Badge>
         </Disclosure.Panel>
       </Disclosure>
@@ -126,7 +126,7 @@ const AccountInfo = ({
                 type="submit"
                 data-testid="save-button"
               >
-                Save changes
+                Salveaza Schimbarile
               </Button>
             </div>
           </div>

@@ -7,9 +7,10 @@ import { useElements, useStripe } from "@stripe/react-stripe-js"
 import React, { useState } from "react"
 import ErrorMessage from "../error-message"
 import Spinner from "@modules/common/icons/spinner"
-import { placeOrder } from "@lib/data/cart"
+import { getAwb, placeOrder } from "@lib/data/cart"
 import { HttpTypes } from "@medusajs/types"
 import { isManual, isPaypal, isStripe } from "@lib/constants"
+
 
 type PaymentButtonProps = {
   cart: HttpTypes.StoreCart
@@ -35,8 +36,17 @@ const PaymentButton: React.FC<PaymentButtonProps> = ({
   //   return <GiftCardPaymentButton />
   // }
 
-  const paymentSession = cart.payment_collection?.payment_sessions?.[0]
 
+  
+  
+    
+  
+
+  const paymentSession = cart.payment_collection?.payment_sessions?.[0]
+  console.log("este plata manuala: ",isManual(paymentSession?.provider_id))
+
+
+  
   switch (true) {
     case isStripe(paymentSession?.provider_id):
       return (
@@ -48,7 +58,7 @@ const PaymentButton: React.FC<PaymentButtonProps> = ({
       )
     case isManual(paymentSession?.provider_id):
       return (
-        <ManualTestPaymentButton notReady={notReady} data-testid={dataTestId} />
+        <ManualTestPaymentButton notReady={notReady} data-testid={dataTestId} cart={cart} />
       )
     case isPaypal(paymentSession?.provider_id):
       return (
@@ -59,7 +69,7 @@ const PaymentButton: React.FC<PaymentButtonProps> = ({
         />
       )
     default:
-      return <Button disabled>Select a payment method</Button>
+      return <Button disabled>Selecteaza o metoda de plata</Button>
   }
 }
 
@@ -67,8 +77,20 @@ const GiftCardPaymentButton = () => {
   const [submitting, setSubmitting] = useState(false)
 
   const handleOrder = async () => {
-    setSubmitting(true)
-    await placeOrder()
+    try {
+      setSubmitting(true) // Setează starea de loading
+  
+      // Generează AWB
+     
+  
+      // Plasează comanda
+      await placeOrder()
+    } catch (error: any) {
+      console.error("Eroare la plasarea comenzii:", error)
+     
+    } finally {
+      setSubmitting(false) // Resetează starea de loading
+    }
   }
 
   return (
@@ -77,7 +99,7 @@ const GiftCardPaymentButton = () => {
       isLoading={submitting}
       data-testid="submit-order-button"
     >
-      Place order
+      Plaseaza Comanda
     </Button>
   )
 }
@@ -115,61 +137,72 @@ const StripePaymentButton = ({
   const disabled = !stripe || !elements ? true : false
 
   const handlePayment = async () => {
-    setSubmitting(true)
-
-    if (!stripe || !elements || !card || !cart) {
-      setSubmitting(false)
-      return
-    }
-
-    await stripe
-      .confirmCardPayment(session?.data.client_secret as string, {
-        payment_method: {
-          card: card,
-          billing_details: {
-            name:
-              cart.billing_address?.first_name +
-              " " +
-              cart.billing_address?.last_name,
-            address: {
-              city: cart.billing_address?.city ?? undefined,
-              country: cart.billing_address?.country_code ?? undefined,
-              line1: cart.billing_address?.address_1 ?? undefined,
-              line2: cart.billing_address?.address_2 ?? undefined,
-              postal_code: cart.billing_address?.postal_code ?? undefined,
-              state: cart.billing_address?.province ?? undefined,
+    try {
+      setSubmitting(true) // Activează starea de încărcare
+  
+      console.log("Stripe este")
+  
+      if (!stripe || !elements || !card || !cart) {
+        throw new Error("Stripe sau detaliile necesare lipsesc.")
+      }
+    
+  
+      // Generează AWB
+      await getAwb({cart})
+  
+      // Confirmă plata
+      const { error, paymentIntent } = await stripe.confirmCardPayment(
+        session?.data.client_secret as string,
+        {
+          payment_method: {
+            card: card,
+            billing_details: {
+              name:
+                cart.billing_address?.first_name +
+                " " +
+                cart.billing_address?.last_name,
+              address: {
+                city: cart.billing_address?.city ?? undefined,
+                country: cart.billing_address?.country_code ?? undefined,
+                line1: cart.billing_address?.address_1 ?? undefined,
+                line2: cart.billing_address?.address_2 ?? undefined,
+                postal_code: cart.billing_address?.postal_code ?? undefined,
+                state: cart.billing_address?.province ?? undefined,
+              },
+              email: cart.email,
+              phone: cart.billing_address?.phone ?? undefined,
             },
-            email: cart.email,
-            phone: cart.billing_address?.phone ?? undefined,
           },
-        },
-      })
-      .then(({ error, paymentIntent }) => {
-        if (error) {
-          const pi = error.payment_intent
-
-          if (
-            (pi && pi.status === "requires_capture") ||
-            (pi && pi.status === "succeeded")
-          ) {
-            onPaymentCompleted()
-          }
-
-          setErrorMessage(error.message || null)
-          return
         }
-
+      )
+  
+      if (error) {
+        const pi = error.payment_intent
+  
         if (
-          (paymentIntent && paymentIntent.status === "requires_capture") ||
-          paymentIntent.status === "succeeded"
+          (pi && pi.status === "requires_capture") ||
+          (pi && pi.status === "succeeded")
         ) {
-          return onPaymentCompleted()
+          await onPaymentCompleted()
         }
-
-        return
-      })
+  
+        throw new Error(error.message || "Eroare necunoscută la procesarea plății.")
+      }
+  
+      if (
+        (paymentIntent && paymentIntent.status === "requires_capture") ||
+        paymentIntent.status === "succeeded"
+      ) {
+        await onPaymentCompleted()
+      }
+    } catch (err: any) {
+      console.error("Eroare la procesarea plății:", err)
+      setErrorMessage(err.message || "Eroare necunoscută")
+    } finally {
+      setSubmitting(false) // Dezactivează starea de încărcare
+    }
   }
-
+  
   return (
     <>
       <Button
@@ -179,7 +212,7 @@ const StripePaymentButton = ({
         isLoading={submitting}
         data-testid={dataTestId}
       >
-        Place order
+        Plaseaza Comanda
       </Button>
       <ErrorMessage
         error={errorMessage}
@@ -259,7 +292,7 @@ const PayPalPaymentButton = ({
   }
 }
 
-const ManualTestPaymentButton = ({ notReady }: { notReady: boolean }) => {
+const ManualTestPaymentButton = ({ notReady,cart }: { notReady: boolean,cart: HttpTypes.StoreCart }) => {
   const [submitting, setSubmitting] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
@@ -273,11 +306,23 @@ const ManualTestPaymentButton = ({ notReady }: { notReady: boolean }) => {
       })
   }
 
-  const handlePayment = () => {
-    setSubmitting(true)
-
-    onPaymentCompleted()
+  const handlePayment = async () => {
+    try {
+      setSubmitting(true) // Activează starea de încărcare
+  
+      // Generează AWB
+      await getAwb({cart})
+  
+      // Finalizează comanda
+      await onPaymentCompleted()
+    } catch (err: any) {
+      console.error("Eroare la procesarea plății:", err)
+      setErrorMessage(err.message || "Eroare necunoscută")
+    } finally {
+      setSubmitting(false) // Dezactivează starea de încărcare
+    }
   }
+  
 
   return (
     <>
@@ -288,7 +333,7 @@ const ManualTestPaymentButton = ({ notReady }: { notReady: boolean }) => {
         size="large"
         data-testid="submit-order-button"
       >
-        Place order
+        Plaseaza Comanda
       </Button>
       <ErrorMessage
         error={errorMessage}

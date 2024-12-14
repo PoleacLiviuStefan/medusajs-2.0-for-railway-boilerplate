@@ -42,7 +42,7 @@ export default async function PaginatedProducts({
   }
 
   if (productsIds) {
-    queryParams["id"] = productsIds
+    queryParams["id"] = productsIds // Aici setăm ID-urile produselor
   }
 
   if (sortBy === "created_at") {
@@ -55,6 +55,7 @@ export default async function PaginatedProducts({
     return null
   }
 
+  // Folosim getProductsListWithSort cu queryParams care include filtrarea după id
   let {
     response: { products, count },
   } = await getProductsListWithSort({

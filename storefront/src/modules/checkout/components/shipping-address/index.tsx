@@ -6,7 +6,9 @@ import { mapKeys } from "lodash"
 import React, { useEffect, useMemo, useState } from "react"
 import AddressSelect from "../address-select"
 import CountrySelect from "../country-select"
-
+import CountySelect from "../county-select"
+import LocalitySelect from "../locality-select"
+import { setCustomShippingMethod } from "@lib/data/cart"
 const ShippingAddress = ({
   customer,
   cart,
@@ -59,6 +61,25 @@ const ShippingAddress = ({
       }))
   }
 
+  const handleLocalityChange = async (
+    e: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    const selectedCity = e.target.value
+    setFormData({
+      ...formData,
+      "shipping_address.city": selectedCity,
+    })
+
+    // Actualizează metoda de livrare
+    // if (formData["shipping_address.province"]) {
+    //   try {
+    //     await setCustomShippingMethod({ cartId: cart?.id })
+    //   } catch (error) {
+    //     console.error("Error updating shipping cost:", error)
+    //   }
+    // }
+  }
+
   useEffect(() => {
     // Ensure cart is not null and has a shipping_address before setting form data
     if (cart && cart.shipping_address) {
@@ -101,16 +122,7 @@ const ShippingAddress = ({
       )}
       <div className="grid grid-cols-2 gap-4">
         <Input
-          label="First name"
-          name="shipping_address.first_name"
-          autoComplete="given-name"
-          value={formData["shipping_address.first_name"]}
-          onChange={handleChange}
-          required
-          data-testid="shipping-first-name-input"
-        />
-        <Input
-          label="Last name"
+          label="Nume"
           name="shipping_address.last_name"
           autoComplete="family-name"
           value={formData["shipping_address.last_name"]}
@@ -119,7 +131,16 @@ const ShippingAddress = ({
           data-testid="shipping-last-name-input"
         />
         <Input
-          label="Address"
+          label="Prenume"
+          name="shipping_address.first_name"
+          autoComplete="given-name"
+          value={formData["shipping_address.first_name"]}
+          onChange={handleChange}
+          required
+          data-testid="shipping-first-name-input"
+        />
+        <Input
+          label="Adresa"
           name="shipping_address.address_1"
           autoComplete="address-line1"
           value={formData["shipping_address.address_1"]}
@@ -128,7 +149,7 @@ const ShippingAddress = ({
           data-testid="shipping-address-input"
         />
         <Input
-          label="Company"
+          label="Firma"
           name="shipping_address.company"
           value={formData["shipping_address.company"]}
           onChange={handleChange}
@@ -136,7 +157,7 @@ const ShippingAddress = ({
           data-testid="shipping-company-input"
         />
         <Input
-          label="Postal code"
+          label="Cod Postal"
           name="shipping_address.postal_code"
           autoComplete="postal-code"
           value={formData["shipping_address.postal_code"]}
@@ -144,37 +165,55 @@ const ShippingAddress = ({
           required
           data-testid="shipping-postal-code-input"
         />
-        <Input
-          label="City"
+        <LocalitySelect
+          name="shipping_address.city"
+          autoComplete="address-level2"
+          placeholder="Selectează localitatea"
+          value={formData["shipping_address.city"]}
+          county={formData["shipping_address.province"]}
+          onChange={handleLocalityChange}
+        />
+        {/* <Input
+          label="Oras"
           name="shipping_address.city"
           autoComplete="address-level2"
           value={formData["shipping_address.city"]}
           onChange={handleChange}
           required
           data-testid="shipping-city-input"
-        />
+        /> */}
         <CountrySelect
           name="shipping_address.country_code"
-          autoComplete="country"
+          autoComplete="Tara"
           region={cart?.region}
           value={formData["shipping_address.country_code"]}
           onChange={handleChange}
           required
           data-testid="shipping-country-select"
         />
-        <Input
-          label="State / Province"
+        <CountySelect
+          name="shipping_address.province"
+          autoComplete="Judet"
+          region={cart?.region}
+          value={formData["shipping_address.province"]}
+          placeholder="Alege județ"
+          required
+          onChange={handleChange}
+        />
+
+        {/* <Input
+          label="Judet / Sector"
           name="shipping_address.province"
           autoComplete="address-level1"
           value={formData["shipping_address.province"]}
           onChange={handleChange}
           required
           data-testid="shipping-province-input"
-        />
+        /> */}
       </div>
       <div className="my-8">
         <Checkbox
-          label="Billing address same as shipping address"
+          label="Adresa de facturare si cea de livrare sunt aceleasi"
           name="same_as_billing"
           checked={checked}
           onChange={onChange}
@@ -186,7 +225,7 @@ const ShippingAddress = ({
           label="Email"
           name="email"
           type="email"
-          title="Enter a valid email address."
+          title="Introdu o adresa de email valida"
           autoComplete="email"
           value={formData.email}
           onChange={handleChange}
@@ -194,11 +233,12 @@ const ShippingAddress = ({
           data-testid="shipping-email-input"
         />
         <Input
-          label="Phone"
+          label="Telefon"
           name="shipping_address.phone"
           autoComplete="tel"
           value={formData["shipping_address.phone"]}
           onChange={handleChange}
+          required
           data-testid="shipping-phone-input"
         />
       </div>

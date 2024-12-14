@@ -1,83 +1,71 @@
-"use client"
+'use client'
+import { useState, useEffect } from "react"
+import { searchProducts } from "@lib/data/products"
+import ProductPreview from "@modules/products/components/product-preview"
+import { HttpTypes } from "@medusajs/types"
+import { getRegion } from "@lib/data/regions"
 
-import { InstantSearch } from "react-instantsearch-hooks-web"
-import { useRouter } from "next/navigation"
-import { MagnifyingGlassMini } from "@medusajs/icons"
+const SearchModal = () => {
+  const [query, setQuery] = useState("")
+  const [results, setResults] = useState<HttpTypes.StoreProduct[]>([])
+  const [isLoading, setIsLoading] = useState(false)
+  const [region, setRegion] = useState<HttpTypes.StoreRegion | null>(null)
 
-import { SEARCH_INDEX_NAME, searchClient } from "@lib/search-client"
-import Hit from "@modules/search/components/hit"
-import Hits from "@modules/search/components/hits"
-import SearchBox from "@modules/search/components/search-box"
-import { useEffect, useRef } from "react"
+  // Fetch region on component mount
+  useEffect(() => {
+    const fetchRegion = async () => {
+      try {
+        const fetchedRegion = await getRegion("RO") // Fetch region based on country code
+        setRegion(fetchedRegion)
+      } catch (err) {
+        console.error("Failed to fetch region:", err)
+      }
+    }
+    fetchRegion()
+  }, [])
 
-export default function SearchModal() {
-  const router = useRouter()
-  const searchRef = useRef(null)
+  const handleSearch = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+    setQuery(value)
 
-  // close modal on outside click
-  const handleOutsideClick = (event: MouseEvent) => {
-    if (event.target === searchRef.current) {
-      router.back()
+    if (value.length > 2) {
+      setIsLoading(true)
+      const products = await searchProducts(value, "RO")
+      setResults(products)
+      setIsLoading(false)
+    } else {
+      setResults([])
     }
   }
 
-  useEffect(() => {
-    window.addEventListener("click", handleOutsideClick)
-    // cleanup
-    return () => {
-      window.removeEventListener("click", handleOutsideClick)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
-  // disable scroll on body when modal is open
-  useEffect(() => {
-    document.body.style.overflow = "hidden"
-    return () => {
-      document.body.style.overflow = "unset"
-    }
-  }, [])
-
-  // on escape key press, close modal
-  useEffect(() => {
-    const handleEsc = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        router.back()
-      }
-    }
-    window.addEventListener("keydown", handleEsc)
-
-    // cleanup
-    return () => {
-      window.removeEventListener("keydown", handleEsc)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
   return (
-    <div className="relative z-[75]">
-      <div className="fixed inset-0 bg-opacity-75 backdrop-blur-md opacity-100 h-screen w-screen" />
-      <div className="fixed inset-0 px-5 sm:p-0" ref={searchRef}>
-        <div className="flex flex-col justify-start w-full h-fit transform p-5 items-center text-left align-middle transition-all max-h-[75vh] bg-transparent shadow-none">
-          <InstantSearch
-            indexName={SEARCH_INDEX_NAME}
-            searchClient={searchClient}
-          >
-            <div
-              className="flex absolute flex-col h-fit w-full sm:w-fit"
-              data-testid="search-modal-container"
-            >
-              <div className="w-full flex items-center gap-x-2 p-4 bg-[rgba(3,7,18,0.5)] text-ui-fg-on-color backdrop-blur-2xl rounded-rounded">
-                <MagnifyingGlassMini />
-                <SearchBox />
-              </div>
-              <div className="flex-1 mt-6">
-                <Hits hitComponent={Hit} />
-              </div>
-            </div>
-          </InstantSearch>
+    <div className="search-modal-container p-4 bg-white shadow-lg">
+      <input
+        type="text"
+        value={query}
+        onChange={handleSearch}
+        placeholder="Caută produse..."
+        className="w-full p-2 border border-gray-300 rounded"
+        data-testid="search-input"
+      />
+      {isLoading ? (
+        <p>Se caută...</p>
+      ) : results.length > 0 && region ? (
+<ul className="search-results grid grid-cols-2 gap-6" data-testid="search-results">
+  {results.map((product) => (
+    <li key={product.id} data-testid="search-result">
+      <ProductPreview product={product} isFeatured={false} region={region} />
+    </li>
+  ))}
+</ul>
+
+      ) : query.length > 2 ? (
+        <div data-testid="no-search-results-container">
+          <p>Nu au fost găsite produse pentru căutarea ta.</p>
         </div>
-      </div>
+      ) : null}
     </div>
   )
 }
+
+export default SearchModal
